@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@theme {
+  /* Aurum Estates Premium Palette */
+  --color-gold-primary: #C9A84C;
+  --color-gold-light: #E8C97A;
+  --color-gold-dark: #A8893C;
+  
+  --color-dark-primary: #0A0A0A;
+  --color-dark-secondary: #111111;
+  --color-dark-card: #1A1A1A;
+  --color-dark-border: #2A2A2A;
+  
+  --color-offWhite: #F5F0E8;
+  --color-muted: #888888;
+
+  /* Typography */
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  /* Cinematic Animations */
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-kenburns: kenburns 20s ease-out infinite alternate;
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes kenburns {
+    0% { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.15) translate(-2%, -2%); }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    @apply bg-dark-primary text-offWhite antialiased;
+  }
+  
+  body {
+    @apply font-sans;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-primary;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gold-primary/30 hover:bg-gold-primary transition-colors;
+  }
+}
+
+@layer components {
+  .glass-nav {
+    @apply bg-dark-primary/95 backdrop-blur-xl border-b border-dark-border;
+  }
+  
+  .premium-btn-filled {
+    @apply bg-gold-primary text-dark-primary px-8 py-3 text-[11px] uppercase tracking-[0.2em] font-semibold 
+           transition-all duration-300 hover:bg-gold-light active:scale-95;
+  }
+
+  .premium-btn-outline {
+    @apply border border-gold-primary text-gold-primary px-8 py-3 text-[11px] uppercase tracking-[0.2em] font-semibold 
+           transition-all duration-300 hover:bg-gold-primary hover:text-dark-primary active:scale-95;
+  }
+  
+  .overline-text {
+    @apply font-sans text-[11px] uppercase tracking-[0.3em] text-gold-primary;
+  }
+}
