@@ -1,17 +1,27 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Instagram, Facebook, Youtube, Linkedin, MapPin, Phone, Mail, ArrowRight } from 'lucide-react'
+import { MapPin, Phone, Mail, ArrowRight } from 'lucide-react'
 import { DUMMY_SETTINGS } from '../data/dummyData'
+
+const BrandIcon = ({ label, size = 20 }) => (
+  <span
+    className="inline-flex items-center justify-center rounded-full border border-current text-[10px] font-bold uppercase"
+    style={{ width: size, height: size }}
+    aria-hidden="true"
+  >
+    {label}
+  </span>
+)
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   const socialLinks = [
-    { icon: <Instagram size={20} />, href: DUMMY_SETTINGS.instagram_url },
-    { icon: <Facebook size={20} />, href: DUMMY_SETTINGS.facebook_url },
-    { icon: <Youtube size={20} />, href: DUMMY_SETTINGS.youtube_url },
-    { icon: <Linkedin size={20} />, href: '#' },
+    { icon: <BrandIcon label="ig" size={20} />, href: DUMMY_SETTINGS.instagram_url, label: 'Instagram' },
+    { icon: <BrandIcon label="f" size={20} />, href: DUMMY_SETTINGS.facebook_url, label: 'Facebook' },
+    { icon: <BrandIcon label="yt" size={20} />, href: DUMMY_SETTINGS.youtube_url, label: 'YouTube' },
+    { icon: <BrandIcon label="in" size={20} />, href: '#', label: 'LinkedIn' },
   ]
 
   return (
@@ -36,6 +46,7 @@ const Footer = () => {
                 <motion.a
                   key={i}
                   href={social.href}
+                  aria-label={social.label}
                   whileHover={{ y: -5, color: '#C9A84C', scale: 1.2 }}
                   className="text-white/30 transition-all"
                 >

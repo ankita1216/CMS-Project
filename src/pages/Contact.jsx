@@ -1,19 +1,86 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import SEOHead from '../components/SEOHead'
 import SectionHeader from '../components/SectionHeader'
-import { MapPin, Phone, Mail, MessageSquare, Instagram, Facebook, Youtube, Check } from 'lucide-react'
-import { DUMMY_PROJECTS, DUMMY_SETTINGS } from '../data/dummyData'
+import { MapPin, Phone, Mail, MessageSquare, Check, AlertCircle, Loader2 } from 'lucide-react'
+import { DUMMY_SETTINGS } from '../data/dummyData'
+import { supabase } from '../lib/supabaseClient'
+
+const BrandIcon = ({ label, size = 24 }) => (
+  <span
+    className="inline-flex items-center justify-center rounded-full border border-current text-[10px] font-bold uppercase"
+    style={{ width: size, height: size }}
+    aria-hidden="true"
+  >
+    {label}
+  </span>
+)
 
 const Contact = () => {
-  const [formStep, setFormStep] = useState('idle')
+  const [formStep, setFormStep] = useState('idle') // idle, submitting, success, error
+  const [projects, setProjects] = useState([])
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    project_id: '',
+    message: '',
+    source: 'Google Search'
+  })
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data } = await supabase.from('projects').select('id, title')
+      if (data) setProjects(data)
+    }
+    fetchProjects()
+  }, [])
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setFormStep('submitting')
-    setTimeout(() => {
+    setErrorMessage('')
+
+    try {
+      // 1. Save to Supabase Inquiries table
+      const { error: sbError } = await supabase.from('inquiries').insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          project_id: formData.project_id || null,
+          message: formData.message,
+        }
+      ])
+
+      if (sbError) throw sbError
+
+      // 2. Send to Pabbly Webhook (if URL is provided)
+      const pabblyUrl = import.meta.env.VITE_PABBLY_WEBHOOK
+      if (pabblyUrl) {
+        await fetch(pabblyUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            projectName: projects.find(p => p.id === parseInt(formData.project_id))?.title || 'General Inquiry',
+            timestamp: new Date().toISOString()
+          })
+        }).catch(err => console.warn('Pabbly Webhook failed, but data saved to DB', err))
+      }
+
       setFormStep('success')
-    }, 1500)
+    } catch (err) {
+      console.error('Submission error:', err)
+      setErrorMessage('Failed to send message. Please try again or call us directly.')
+      setFormStep('error')
+    }
   }
 
   return (
@@ -87,14 +154,19 @@ const Contact = () => {
             <div className="mt-16 pt-12 border-t border-dark-border">
               <h4 className="text-[10px] uppercase tracking-[0.3em] text-muted mb-6">Follow Our Journey</h4>
               <div className="flex gap-6">
-                {[<Instagram />, <Facebook />, <Youtube />].map((icon, i) => (
+                {[
+                  { icon: <BrandIcon label="ig" />, label: 'Instagram' },
+                  { icon: <BrandIcon label="f" />, label: 'Facebook' },
+                  { icon: <BrandIcon label="yt" />, label: 'YouTube' },
+                ].map((social, i) => (
                   <motion.a 
                     key={i} 
                     href="#" 
+                    aria-label={social.label}
                     whileHover={{ scale: 1.2, color: '#C9A84C' }}
                     className="text-white/30 transition-colors"
                   >
-                    {React.cloneElement(icon, { size: 24 })}
+                    {social.icon}
                   </motion.a>
                 ))}
               </div>
@@ -116,35 +188,73 @@ const Contact = () => {
               <>
                 <h3 className="text-3xl font-display font-bold mb-8">Send Us a Message</h3>
                 <form onSubmit={handleSubmit} className="space-y-8">
+                  {errorMessage && (
+                    <div className="bg-red-500/10 border border-red-500/50 rounded p-4 flex items-center gap-3 text-red-400 text-sm">
+                      <AlertCircle size={18} /> {errorMessage}
+                    </div>
+                  )}
+                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-muted">Full Name *</label>
-                      <input required type="text" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all" placeholder="Enter your name" />
+                      <input 
+                        required 
+                        type="text" 
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all" 
+                        placeholder="Enter your name" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-muted">Phone Number *</label>
-                      <input required type="tel" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all" placeholder="+91 98765..." />
+                      <input 
+                        required 
+                        type="tel" 
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all" 
+                        placeholder="+91 98765..." 
+                      />
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-muted">Email Address</label>
-                      <input type="email" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all" placeholder="email@address.com" />
+                      <input 
+                        type="email" 
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all" 
+                        placeholder="email@address.com" 
+                      />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-muted">Interested Project</label>
-                      <select className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all text-muted">
-                        <option>Select a Project</option>
-                        {DUMMY_PROJECTS.map(p => <option key={p.id}>{p.title}</option>)}
+                      <select 
+                        name="project_id"
+                        value={formData.project_id}
+                        onChange={handleInputChange}
+                        className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all text-white"
+                      >
+                        <option value="">Select a Project</option>
+                        {projects.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
                       </select>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest text-muted">How did you hear about us?</label>
-                    <select className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all text-muted">
-                      <option>Select Option</option>
+                    <select 
+                      name="source"
+                      value={formData.source}
+                      onChange={handleInputChange}
+                      className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all text-white"
+                    >
                       <option>Google Search</option>
                       <option>Social Media</option>
                       <option>Friend / Referral</option>
@@ -155,11 +265,23 @@ const Contact = () => {
 
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase tracking-widest text-muted">Your Message</label>
-                    <textarea rows="4" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all resize-none" placeholder="How can we help you?"></textarea>
+                    <textarea 
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows="4" 
+                      className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-all resize-none text-white" 
+                      placeholder="How can we help you?"
+                    ></textarea>
                   </div>
 
-                  <button className="w-full premium-btn-filled py-4 flex items-center justify-center gap-3">
-                    {formStep === 'submitting' ? 'Sending Message...' : 'Send Message'}
+                  <button 
+                    disabled={formStep === 'submitting'}
+                    className="w-full premium-btn-filled py-4 flex items-center justify-center gap-3 disabled:opacity-50"
+                  >
+                    {formStep === 'submitting' ? (
+                      <><Loader2 className="animate-spin" size={20} /> Sending...</>
+                    ) : 'Send Message'}
                   </button>
                   <p className="text-[10px] text-center text-muted">We respond within 2 business hours</p>
                 </form>
