@@ -1,8 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, Facebook, Instagram, Youtube, MapPin } from 'lucide-react'
+import { ArrowUpRight, MapPin } from 'lucide-react'
 import { DUMMY_SETTINGS } from '../data/dummyData'
+import BrandIcon from './BrandIcon'
 
 const Footer = () => {
   return (
@@ -91,13 +92,13 @@ const Footer = () => {
               <p className="text-gold-primary text-[10px] uppercase tracking-widest mb-8 font-bold">Follow Us</p>
               <div className="flex flex-col gap-5">
                 <a href={DUMMY_SETTINGS.facebook_url} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-white/60 hover:text-gold-primary transition-colors text-sm group">
-                  <Facebook size={18} className="group-hover:scale-110 transition-transform" /> Facebook
+                  <BrandIcon label="f" size={18} className="group-hover:scale-110 transition-transform" /> Facebook
                 </a>
                 <a href={DUMMY_SETTINGS.instagram_url} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-white/60 hover:text-gold-primary transition-colors text-sm group">
-                  <Instagram size={18} className="group-hover:scale-110 transition-transform" /> Instagram
+                  <BrandIcon label="ig" size={18} className="group-hover:scale-110 transition-transform" /> Instagram
                 </a>
                 <a href={DUMMY_SETTINGS.youtube_url} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-white/60 hover:text-gold-primary transition-colors text-sm group">
-                  <Youtube size={18} className="group-hover:scale-110 transition-transform" /> YouTube
+                  <BrandIcon label="yt" size={18} className="group-hover:scale-110 transition-transform" /> YouTube
                 </a>
               </div>
             </div>

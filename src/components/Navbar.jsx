@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronRight, ChevronDown, Facebook, Instagram, Youtube } from 'lucide-react'
+import { Menu, X, ChevronRight, ChevronDown, ArrowRight } from 'lucide-react'
 import { DUMMY_SETTINGS } from '../data/dummyData'
+import BrandIcon from './BrandIcon'
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -58,9 +59,9 @@ const Navbar = () => {
             className="hidden md:flex justify-between items-center py-2 px-8 bg-dark-primary/90 border-b border-white/5 absolute top-0 w-full z-50 text-[10px] tracking-widest text-white/50 uppercase"
           >
             <div className="flex gap-6">
-              <span className="flex items-center gap-2 hover:text-gold-primary transition-colors cursor-pointer"><Facebook size={12} /> Facebook</span>
-              <span className="flex items-center gap-2 hover:text-gold-primary transition-colors cursor-pointer"><Instagram size={12} /> Instagram</span>
-              <span className="flex items-center gap-2 hover:text-gold-primary transition-colors cursor-pointer"><Youtube size={12} /> YouTube</span>
+              <span className="flex items-center gap-2 hover:text-gold-primary transition-colors cursor-pointer"><BrandIcon label="f" size={12} /> Facebook</span>
+              <span className="flex items-center gap-2 hover:text-gold-primary transition-colors cursor-pointer"><BrandIcon label="ig" size={12} /> Instagram</span>
+              <span className="flex items-center gap-2 hover:text-gold-primary transition-colors cursor-pointer"><BrandIcon label="yt" size={12} /> YouTube</span>
             </div>
             <div className="flex gap-6">
               <a href={`tel:${DUMMY_SETTINGS.contact_phone}`} className="hover:text-gold-primary transition-colors">{DUMMY_SETTINGS.contact_phone}</a>
@@ -89,7 +90,11 @@ const Navbar = () => {
                 onMouseEnter={() => link.hasMegaMenu && setActiveDropdown('projects')}
                 onMouseLeave={() => link.hasMegaMenu && setActiveDropdown(null)}
               >
-                <Link to={link.path} className="flex items-center gap-1">
+                <Link 
+                  to={link.path} 
+                  className="flex items-center gap-1"
+                  onClick={() => setActiveDropdown(null)}
+                >
                   <span className={`text-xs uppercase tracking-widest transition-colors duration-300 font-medium ${
                     location.pathname === link.path ? 'text-gold-primary' : 'text-white/70 group-hover:text-white'
                   }`}>
@@ -114,7 +119,11 @@ const Navbar = () => {
                           <ul className="space-y-4">
                             {link.megaMenu.categories.map(cat => (
                               <li key={cat}>
-                                <Link to={`/projects?category=${cat}`} className="text-white/70 hover:text-white text-sm transition-colors flex items-center justify-between group/item">
+                                <Link 
+                                  to={`/projects?category=${cat}`} 
+                                  onClick={() => setActiveDropdown(null)}
+                                  className="text-white/70 hover:text-white text-sm transition-colors flex items-center justify-between group/item"
+                                >
                                   {cat} <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-gold-primary" />
                                 </Link>
                               </li>
@@ -127,7 +136,11 @@ const Navbar = () => {
                           <ul className="space-y-4">
                             {link.megaMenu.cities.map(city => (
                               <li key={city}>
-                                <Link to={`/projects?city=${city}`} className="text-white/70 hover:text-white text-sm transition-colors flex items-center justify-between group/item">
+                                <Link 
+                                  to={`/projects?city=${city}`} 
+                                  onClick={() => setActiveDropdown(null)}
+                                  className="text-white/70 hover:text-white text-sm transition-colors flex items-center justify-between group/item"
+                                >
                                   {city} <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-gold-primary" />
                                 </Link>
                               </li>
@@ -137,9 +150,13 @@ const Navbar = () => {
                         <div className="w-[1px] bg-white/5" />
                         <div className="flex-1 flex flex-col justify-end">
                            <div className="bg-white/5 p-6 border border-white/5">
-                             <p className="text-xs text-white/50 mb-4">Looking for something specific?</p>
-                             <Link to="/contact" className="text-gold-primary text-sm uppercase tracking-widest font-bold flex items-center gap-2 group/cta">
-                               Get in Touch <ChevronRight size={16} className="group-hover/cta:translate-x-1 transition-transform" />
+                             <p className="text-xs text-white/50 mb-4 font-light">Looking for all items?</p>
+                             <Link 
+                               to="/projects" 
+                               onClick={() => setActiveDropdown(null)}
+                               className="text-gold-primary text-xs uppercase tracking-widest font-bold flex items-center gap-2 group/cta"
+                             >
+                               View Collection <ChevronRight size={14} className="group-hover/cta:translate-x-1 transition-transform" />
                              </Link>
                            </div>
                         </div>
@@ -224,7 +241,7 @@ const Navbar = () => {
                 >
                   <Link
                     to={link.path}
-                    onClick={() => !link.hasMegaMenu && setIsMobileMenuOpen(false)}
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center justify-between group"
                   >
                     <span className="text-3xl font-display text-white group-hover:text-gold-primary transition-colors">
@@ -263,9 +280,9 @@ const Navbar = () => {
               
               {/* Mobile Socials */}
               <div className="flex gap-6 mt-6">
-                 <Facebook size={24} className="text-white/50 hover:text-gold-primary transition-colors" />
-                 <Instagram size={24} className="text-white/50 hover:text-gold-primary transition-colors" />
-                 <Youtube size={24} className="text-white/50 hover:text-gold-primary transition-colors" />
+                 <BrandIcon label="f" size={24} className="text-white/50 hover:text-gold-primary transition-colors" />
+                 <BrandIcon label="ig" size={24} className="text-white/50 hover:text-gold-primary transition-colors" />
+                 <BrandIcon label="yt" size={24} className="text-white/50 hover:text-gold-primary transition-colors" />
               </div>
             </div>
             

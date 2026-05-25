@@ -1,18 +1,60 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { DUMMY_PROJECTS } from '../data/dummyData'
 import SEOHead from '../components/SEOHead'
-import { MapPin, Check, FileText, Play, Waves, Dumbbell, Car, ArrowUpDown, Shield, TreeDeciduous, Building, Star, Activity, Zap, Wifi, Trophy, X } from 'lucide-react'
+import { fetchProjectBySlug, createInquiry } from '../lib/api'
+import { MapPin, Check, FileText, Play, Waves, Dumbbell, Car, ArrowUpDown, Shield, TreeDeciduous, Building, Star, Activity, Zap, Wifi, Trophy, X, Loader2 } from 'lucide-react'
 
 const ProjectDetail = () => {
   const { slug } = useParams()
-  const project = DUMMY_PROJECTS.find(p => p.slug === slug)
+  const [project, setProject] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [activeImage, setActiveImage] = useState(0)
   const [activePlan, setActivePlan] = useState(0)
-  const [formStep, setFormStep] = useState('idle') // idle | submitting | success
+  const [formStep, setFormStep] = useState('idle') // idle | submitting | success | error
 
-  if (!project) return <div className="pt-40 text-center">Project not found</div>
+  // Form input states
+  const [inquiryData, setInquiryData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    budget: 'Select Budget Range'
+  })
+
+  // Fetch Project from backend, fallback to dummy
+  useEffect(() => {
+    const loadProject = async () => {
+      setLoading(true)
+      try {
+        const data = await fetchProjectBySlug(slug)
+        if (data) {
+          setProject(data)
+        } else {
+          const fallback = DUMMY_PROJECTS.find(p => p.slug === slug)
+          setProject(fallback)
+        }
+      } catch (err) {
+        console.warn('API project fetch failed, checking fallback:', err)
+        const fallback = DUMMY_PROJECTS.find(p => p.slug === slug)
+        setProject(fallback)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProject()
+  }, [slug])
+
+  if (loading) {
+    return (
+      <div className="pt-40 pb-40 text-center flex flex-col items-center justify-center gap-4 text-white/40">
+        <Loader2 className="animate-spin text-gold-primary" size={32} />
+        <p className="text-xs uppercase tracking-widest">Gathering project specs...</p>
+      </div>
+    )
+  }
+
+  if (!project) return <div className="pt-40 text-center text-white/50">Project not found</div>
 
   const amenityIcons = {
     "Pool": <Waves size={24} />,
@@ -29,14 +71,22 @@ const ProjectDetail = () => {
     "Tennis": <Trophy size={24} />
   }
 
-  const handleInquirySubmit = (e) => {
+  const handleInquirySubmit = async (e) => {
     e.preventDefault()
     setFormStep('submitting')
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Inquiry Submitted for:", project.title)
+    try {
+      await createInquiry({
+        name: inquiryData.name,
+        phone: inquiryData.phone,
+        email: inquiryData.email,
+        project_id: project.id,
+        message: `Lead from detailed page of ${project.title}. Budget specified: ${inquiryData.budget}`
+      })
       setFormStep('success')
-    }, 1500)
+    } catch (err) {
+      console.error(err)
+      setFormStep('error')
+    }
   }
 
   return (
@@ -162,22 +212,46 @@ const ProjectDetail = () => {
                 <form onSubmit={handleInquirySubmit} className="space-y-6">
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase tracking-widest text-muted">Full Name *</label>
-                    <input required type="text" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors" placeholder="John Doe" />
+                    <input 
+                      required 
+                      type="text" 
+                      className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors" 
+                      placeholder="John Doe"
+                      value={inquiryData.name}
+                      onChange={(e) => setInquiryData({ ...inquiryData, name: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase tracking-widest text-muted">Phone Number *</label>
                     <div className="flex">
                       <span className="bg-dark-primary border border-dark-border border-r-0 px-3 flex items-center text-sm text-muted">+91</span>
-                      <input required type="tel" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors" placeholder="9876543210" />
+                      <input 
+                        required 
+                        type="tel" 
+                        className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors" 
+                        placeholder="9876543210"
+                        value={inquiryData.phone}
+                        onChange={(e) => setInquiryData({ ...inquiryData, phone: e.target.value })}
+                      />
                     </div>
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase tracking-widest text-muted">Email Address</label>
-                    <input type="email" className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors" placeholder="john@example.com" />
+                    <input 
+                      type="email" 
+                      className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors" 
+                      placeholder="john@example.com"
+                      value={inquiryData.email}
+                      onChange={(e) => setInquiryData({ ...inquiryData, email: e.target.value })}
+                    />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase tracking-widest text-muted">Your Budget</label>
-                    <select className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors text-muted">
+                    <select 
+                      className="w-full bg-dark-primary border border-dark-border px-4 py-3 text-sm focus:border-gold-primary outline-none transition-colors text-white"
+                      value={inquiryData.budget}
+                      onChange={(e) => setInquiryData({ ...inquiryData, budget: e.target.value })}
+                    >
                       <option>Select Budget Range</option>
                       <option>&lt; 1 Cr</option>
                       <option>1 Cr - 3 Cr</option>

@@ -4,7 +4,7 @@ import SEOHead from '../components/SEOHead'
 import SectionHeader from '../components/SectionHeader'
 import { MapPin, Phone, Mail, MessageSquare, Check, AlertCircle, Loader2 } from 'lucide-react'
 import { DUMMY_SETTINGS } from '../data/dummyData'
-import { supabase } from '../lib/supabaseClient'
+import { fetchProjects, createInquiry } from '../lib/api'
 
 const BrandIcon = ({ label, size = 24 }) => (
   <span
@@ -30,11 +30,15 @@ const Contact = () => {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      const { data } = await supabase.from('projects').select('id, title')
-      if (data) setProjects(data)
+    const loadProjects = async () => {
+      try {
+        const data = await fetchProjects()
+        if (data) setProjects(data)
+      } catch (err) {
+        console.warn('Failed to load projects list for form:', err)
+      }
     }
-    fetchProjects()
+    loadProjects()
   }, [])
 
   const handleInputChange = (e) => {
@@ -48,18 +52,14 @@ const Contact = () => {
     setErrorMessage('')
 
     try {
-      // 1. Save to Supabase Inquiries table
-      const { error: sbError } = await supabase.from('inquiries').insert([
-        {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          project_id: formData.project_id || null,
-          message: formData.message,
-        }
-      ])
-
-      if (sbError) throw sbError
+      // 1. Save to Inquiries table via Express API
+      await createInquiry({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        project_id: formData.project_id ? parseInt(formData.project_id) : null,
+        message: `[Source: ${formData.source}] ${formData.message}`,
+      })
 
       // 2. Send to Pabbly Webhook (if URL is provided)
       const pabblyUrl = import.meta.env.VITE_PABBLY_WEBHOOK

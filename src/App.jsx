@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -35,61 +35,72 @@ import ScrollToTop from './components/ScrollToTop'
 import WhatsAppButton from './components/WhatsAppButton'
 import SEOHead from './components/SEOHead'
 
+const LayoutWrapper = ({ children }) => {
+  const location = useLocation()
+  const isAdminPath = location.pathname.startsWith('/admin')
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {!isAdminPath && <Navbar />}
+      
+      <main className="flex-grow">
+        {children}
+      </main>
+
+      {!isAdminPath && <Footer />}
+      {!isAdminPath && <ScrollToTop />}
+      {!isAdminPath && <WhatsAppButton />}
+    </div>
+  )
+}
+
 function App() {
   return (
     <Router>
       <SEOHead />
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        
-        <main className="flex-grow">
-          <Suspense fallback={<Loader fullScreen />}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Home />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:slug" element={<ProjectDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
+      <LayoutWrapper>
+        <Suspense fallback={<Loader fullScreen />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:slug" element={<ProjectDetail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminLogin />} />
-              
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/projects" 
-                element={
-                  <ProtectedRoute>
-                    <ManageProjects />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/admin/inquiries" 
-                element={
-                  <ProtectedRoute>
-                    <Inquiries />
-                  </ProtectedRoute>
-                } 
-              />
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            
+            <Route 
+              path="/admin/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/projects" 
+              element={
+                <ProtectedRoute>
+                  <ManageProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/inquiries" 
+              element={
+                <ProtectedRoute>
+                  <Inquiries />
+                </ProtectedRoute>
+              } 
+            />
 
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </main>
-
-        <Footer />
-        <ScrollToTop />
-        <WhatsAppButton />
-      </div>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </LayoutWrapper>
     </Router>
   )
 }

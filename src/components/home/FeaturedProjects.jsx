@@ -1,17 +1,39 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import SectionHeader from '../SectionHeader'
 import { DUMMY_PROJECTS } from '../../data/dummyData'
+import { fetchProjects } from '../../lib/api'
 
 const FeaturedProjects = () => {
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('All')
   const [activeCityFilter, setActiveCityFilter] = useState('All')
 
-  const filteredProjects = DUMMY_PROJECTS.filter(project => {
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const data = await fetchProjects()
+        if (data && data.length > 0) {
+          setProjects(data)
+        } else {
+          setProjects(DUMMY_PROJECTS)
+        }
+      } catch (err) {
+        setProjects(DUMMY_PROJECTS)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProjects()
+  }, [])
+
+  const filteredProjects = projects.filter(project => {
     const matchCategory = activeCategoryFilter === 'All' || project.category === activeCategoryFilter
-    const matchCity = activeCityFilter === 'All' || project.city === activeCityFilter
+    const displayCity = project.city || (project.location ? project.location.split(',').pop().trim() : '')
+    const matchCity = activeCityFilter === 'All' || displayCity.toLowerCase() === activeCityFilter.toLowerCase()
     return matchCategory && matchCity
   }).slice(0, 6)
 
