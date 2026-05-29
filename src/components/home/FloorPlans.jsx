@@ -6,9 +6,9 @@ const FloorPlans = () => {
   const [activePlan, setActivePlan] = useState(0)
 
   const floorPlans = [
-    { name: '2BHK Signature', carpet: '1,240 Sq.Ft', built: '1,450 Sq.Ft', image: 'https://picsum.photos/id/10/800/800', features: ['2 Master Bedrooms', 'Large Balcony', 'Open Kitchen', 'Utility Area'] },
-    { name: '3BHK Grande', carpet: '1,850 Sq.Ft', built: '2,100 Sq.Ft', image: 'https://picsum.photos/id/20/800/800', features: ['3 Bedrooms', 'Worker Room', 'L-Shaped Living', 'Private Foyer'] },
-    { name: '4BHK Majestic', carpet: '2,600 Sq.Ft', built: '3,200 Sq.Ft', image: 'https://picsum.photos/id/30/800/800', features: ['4 Bedrooms', 'Study Room', 'Walk-in Closets', '3 Balconies'] }
+    { name: '2BHK Signature', carpet: '1,240 Sq.Ft', built: '1,450 Sq.Ft', image: '/floor_plan_2bhk.png', features: ['2 Master Bedrooms', 'Large Balcony', 'Open Kitchen', 'Utility Area'] },
+    { name: '3BHK Grande', carpet: '1,850 Sq.Ft', built: '2,100 Sq.Ft', image: '/floor_plan_3bhk.png', features: ['3 Bedrooms', 'Worker Room', 'L-Shaped Living', 'Private Foyer'] },
+    { name: '4BHK Majestic', carpet: '2,600 Sq.Ft', built: '3,200 Sq.Ft', image: '/floor_plan_4bhk.png', features: ['4 Bedrooms', 'Study Room', 'Walk-in Closets', '3 Balconies'] }
   ]
 
   return (
@@ -41,7 +41,7 @@ const FloorPlans = () => {
               transition={{ duration: 0.6 }}
               className="bg-white/5 p-12 relative"
             >
-              <img src={floorPlans[activePlan].image} alt="Plan" className="w-full h-auto grayscale invert brightness-100 opacity-80" />
+              <img src={floorPlans[activePlan].image} alt="Plan" className="w-full h-auto brightness-100 opacity-80" />
               <div className="absolute top-0 left-0 w-full h-full border border-gold-primary/10 pointer-events-none" />
               <div className="absolute -top-4 -left-4 text-gold-primary/20 font-display italic text-6xl">Plan.</div>
             </motion.div>

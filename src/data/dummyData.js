@@ -50,8 +50,8 @@ export const DUMMY_PROJECTS = [
     description: "Aurum Sky Penthouses represent the pinnacle of luxury. Each residence is a work of art, featuring expansive glass walls that offer 360-degree views of the Arabian Sea and the glittering city lights.",
     rera_number: "P51900012345",
     floor_plans: [
-      { name: "Duplex A", image: "https://picsum.photos/id/10/800/800", size: "4500 Sq.Ft" },
-      { name: "Grand Suite", image: "https://picsum.photos/id/20/800/800", size: "8200 Sq.Ft" }
+      { name: "Duplex A", image: "/floor_plan_2bhk.png", size: "4500 Sq.Ft" },
+      { name: "Grand Suite", image: "/floor_plan_3bhk.png", size: "8200 Sq.Ft" }
     ],
     meta_title: "Luxury Penthouses in Worli | Aurum Sky",
     meta_description: "Discover ultra-luxury sea-facing penthouses at Worli Sea Face."
