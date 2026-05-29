@@ -184,6 +184,11 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
+                onClick={(e) => {
+                  if (link.path === '/about' || link.path === '/contact') {
+                    e.preventDefault()
+                  }
+                }}
                 className="relative group py-2"
               >
                 <span className={`text-xs uppercase tracking-widest transition-colors duration-300 font-medium ${
@@ -193,7 +198,11 @@ const Navbar = () => {
                 </span>
               </Link>
             ))}
-            <Link to="/contact" className="premium-btn-outline py-2 px-6 text-xs tracking-widest uppercase">
+            <Link 
+              to="/contact" 
+              onClick={(e) => e.preventDefault()}
+              className="premium-btn-outline py-2 px-6 text-xs tracking-widest uppercase"
+            >
               Enquire
             </Link>
           </div>
@@ -241,7 +250,13 @@ const Navbar = () => {
                 >
                   <Link
                     to={link.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      if (link.path === '/about' || link.path === '/contact') {
+                        e.preventDefault()
+                      } else {
+                        setIsMobileMenuOpen(false)
+                      }
+                    }}
                     className="flex items-center justify-between group"
                   >
                     <span className="text-3xl font-display text-white group-hover:text-gold-primary transition-colors">
@@ -289,7 +304,7 @@ const Navbar = () => {
             <div className="p-8 border-t border-dark-border bg-dark-secondary">
               <Link 
                 to="/contact" 
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => e.preventDefault()}
                 className="premium-btn-filled w-full text-center py-4"
               >
                 Schedule Site Visit

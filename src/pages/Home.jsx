@@ -21,18 +21,18 @@ const Home = () => {
   return (
     <div className="bg-dark-primary overflow-x-hidden">
       <HeroBanner />
-      <MarqueeTicker />
-      <AboutIntro />
+      {/* <MarqueeTicker /> */}
+      {/* <AboutIntro /> */}
       <FeaturedProjects />
-      <PropertyCategories />
+      {/* <PropertyCategories /> */}
       <FloorPlans />
-      <VideoWalkthrough setIsVideoModalOpen={setIsVideoModalOpen} />
-      <TestimonialsCarousel />
-      <TrustSection />
-      <TeamSection />
-      <CTABanner />
-      <ContactStrip />
-      <VideoModal isVideoModalOpen={isVideoModalOpen} setIsVideoModalOpen={setIsVideoModalOpen} />
+      {/* <VideoWalkthrough setIsVideoModalOpen={setIsVideoModalOpen} /> */}
+      {/* <TestimonialsCarousel /> */}
+      {/* <TrustSection /> */}
+      {/* <TeamSection /> */}
+      {/* <CTABanner /> */}
+      {/* <ContactStrip /> */}
+      {/* <VideoModal isVideoModalOpen={isVideoModalOpen} setIsVideoModalOpen={setIsVideoModalOpen} /> */}
     </div>
   )
 }
