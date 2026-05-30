@@ -43,3 +43,7 @@ supabase/functions/.import_map.json
 
 # Build cache
 .cache
+
+# Backend repository
+backend/
+
