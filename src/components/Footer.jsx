@@ -17,7 +17,6 @@ const Footer = () => {
             </h2>
             <Link 
               to="/contact" 
-              onClick={(e) => e.preventDefault()}
               className="inline-flex items-center gap-4 text-gold-primary uppercase tracking-[0.2em] font-bold text-sm group pb-2 border-b border-gold-primary/30 hover:border-gold-primary transition-colors"
             >
               Schedule a Private Viewing <ArrowUpRight size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -68,11 +67,6 @@ const Footer = () => {
                 <li key={item.name}>
                   <Link 
                     to={item.path} 
-                    onClick={(e) => {
-                      if (item.path === '/about' || item.path === '/contact') {
-                        e.preventDefault()
-                      }
-                    }}
                     className="text-white/60 hover:text-white text-sm transition-colors flex items-center gap-2 group"
                   >
                     <span className="w-0 h-[1px] bg-gold-primary group-hover:w-4 transition-all" />
