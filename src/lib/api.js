@@ -2,13 +2,19 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://cms-backend-091i.onrend
 
 export async function fetchProjects() {
   const res = await fetch(`${API_URL}/api/projects`)
-  if (!res.ok) throw new Error('Failed to fetch projects')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to fetch projects')
+  }
   return res.json()
 }
 
 export async function fetchProjectBySlug(slug) {
   const res = await fetch(`${API_URL}/api/projects/${slug}`)
-  if (!res.ok) throw new Error('Project not found')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Project not found')
+  }
   return res.json()
 }
 
@@ -18,7 +24,10 @@ export async function createProject(projectData) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(projectData)
   })
-  if (!res.ok) throw new Error('Failed to create project')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to create project')
+  }
   return res.json()
 }
 
@@ -28,7 +37,10 @@ export async function updateProject(id, projectData) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(projectData)
   })
-  if (!res.ok) throw new Error('Failed to update project')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to update project')
+  }
   return res.json()
 }
 
@@ -36,13 +48,19 @@ export async function deleteProject(id) {
   const res = await fetch(`${API_URL}/api/projects/${id}`, {
     method: 'DELETE'
   })
-  if (!res.ok) throw new Error('Failed to delete project')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to delete project')
+  }
   return res.json()
 }
 
 export async function fetchInquiries() {
   const res = await fetch(`${API_URL}/api/inquiries`)
-  if (!res.ok) throw new Error('Failed to fetch inquiries')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to fetch inquiries')
+  }
   return res.json()
 }
 
@@ -52,7 +70,10 @@ export async function createInquiry(inquiryData) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(inquiryData)
   })
-  if (!res.ok) throw new Error('Failed to submit inquiry')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to submit inquiry')
+  }
   return res.json()
 }
 
@@ -62,7 +83,10 @@ export async function updateInquiry(id, inquiryData) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(inquiryData)
   })
-  if (!res.ok) throw new Error('Failed to update inquiry')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to update inquiry')
+  }
   return res.json()
 }
 
@@ -70,7 +94,10 @@ export async function deleteInquiry(id) {
   const res = await fetch(`${API_URL}/api/inquiries/${id}`, {
     method: 'DELETE'
   })
-  if (!res.ok) throw new Error('Failed to delete inquiry')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to delete inquiry')
+  }
   return res.json()
 }
 
@@ -84,6 +111,9 @@ export async function uploadImages(files) {
     method: 'POST',
     body: formData
   })
-  if (!res.ok) throw new Error('Failed to upload images')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || 'Failed to upload images')
+  }
   return res.json() // returns { urls: [...] }
 }

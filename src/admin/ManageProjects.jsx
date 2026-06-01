@@ -92,7 +92,7 @@ export default function ManageProjects() {
         images: [...prev.images, ...urls]
       }));
     } catch (err) {
-      setError('Failed to upload images. Please try again.');
+      setError(err.message || 'Failed to upload images. Please try again.');
       console.error(err);
     } finally {
       setUploading(false);
